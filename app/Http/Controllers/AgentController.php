@@ -62,7 +62,7 @@ class AgentController extends Controller
         $validform['annee_courante'] = date('Y');
 
         Agent::create($validform);
-        return redirect()->route('agents.index')  // ← sans s
+        return redirect()->route('agent.index')  // ← sans s
             ->with('success', 'Agent créé avec succès.');
     }
 
@@ -117,7 +117,7 @@ class AgentController extends Controller
                                      - ($validform['absences_defalquer'] ?? 0);
 
         $agent->update($validform);
-        return redirect()->route('agents.index')  // ← sans s
+        return redirect()->route('agent.index')  // ← sans s
             ->with('success', 'Agent modifié avec succès.');
     }
 
@@ -127,7 +127,7 @@ class AgentController extends Controller
     public function destroy(Agent $agent)
     {
         $agent->delete();
-        return redirect()->route('agents.index')  // ← sans s
+        return redirect()->route('agent.index')  // ← sans s
             ->with('success', 'Agent supprimé avec succès.');
     }
 
