@@ -12,7 +12,7 @@
       <nav class="sidebar-nav">
 
         {{-- Dashboard --}}
-        <a class="nav-link active" href="/dashboard" aria-current="page">
+        <a class="nav-link active" href="{{ route('dashboard') }}">
           <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
           <span class="nav-text">Tableau de Bord</span>
         </a>
@@ -46,15 +46,21 @@
           <span class="nav-chevron"><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
         </button>
         <ul class="nav-submenu" id="sub-absences" role="list">
-          <li><a href="">Liste</a></li>
-          <li><a href="">Nouveau</a></li>
+          <li><a href="{{ route('absence.index') }}">Liste</a></li>
+          <li><a href="{{ route('absence.create') }}">Nouveau</a></li>
         </ul>
 
         {{-- Jours Fériés --}}
-        <a class="nav-link" href="charts.html">
+        <button class="nav-link nav-accordion" data-target="sub-JoursFériés" aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
           <span class="nav-text">Jours Fériés</span>
-        </a>
+          <span class="nav-chevron"><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
+        </button>
+        <ul class="nav-submenu" id="sub-JoursFériés" role="list">
+          <li><a href="{{ route('jourferie.index') }}">Liste</a></li>
+          <li><a href="{{ route('jourferie.create') }}">Nouveau</a></li>
+        </ul>
+
 
         {{-- Rapports PDF --}}
         <a class="nav-link" href="profile.html">

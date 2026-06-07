@@ -23,7 +23,13 @@
             <p><strong>Matricule :</strong> {{ $agent->matricule }}</p>
             <p><strong>Lieu affectation :</strong> {{ $agent->lieu_affectation }}</p>
             <p><strong>Date prise service :</strong> {{ $agent->date_prise_service }}</p>
-            <p><strong>Genre :</strong> {{ $agent->genre }}</p>
+            <p><strong>Genre :</strong>
+                @if($agent->sexe == 'M')
+                    Masculin
+                @else
+                    Féminin
+                @endif
+            </p>
             <p><strong>Nb enfants :</strong> {{ $agent->nb_enfants }}</p>
             <p><strong>Congés N-1 :</strong> {{ $agent->jours_conges_annee_precedente }}</p>
             <p><strong>Congés N :</strong> {{ $agent->jours_conges_annee_courante }}</p>
@@ -40,7 +46,10 @@
             <p><strong>Année :</strong> {{ $agent->annee_courante }}</p>
         </div>
 
-        <div class="card-footer mt-3">
+        <div class="card-footer mt-3 d-flex gap-2">
+            <a class="btn btn-primary" href="{{ route('agent.edit', $agent->id) }}">
+                <i class="bi bi-pencil"></i> Modifier
+            </a>
             <a class="btn btn-secondary" href="{{ route('agent.index') }}">
                 <i class="bi bi-arrow-left"></i> Retour
             </a>
