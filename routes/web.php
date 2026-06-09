@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\JourFerieController;
 use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\CongeController;
+use App\Http\Controllers\RapportController;
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
 // ── Agents ───────────────────────────────────────────────────
 Route::get('/agents',              [AgentController::class, 'index'])->name('agent.index');
@@ -35,3 +35,19 @@ Route::get('/absences/{absence}/edit',   [AbsenceController::class, 'edit'])->na
 Route::put('/absences/{absence}',        [AbsenceController::class, 'update'])->name('absence.update');
 Route::get('/absences/{absence}',        [AbsenceController::class, 'show'])->name('absence.show');
 Route::delete('/absences/{absence}',     [AbsenceController::class, 'destroy'])->name('absence.destroy');
+
+// ── Congés ───────────────────────────────────────────────────
+Route::get('/conges',                [CongeController::class, 'index'])->name('conge.index');
+Route::get('/conges/create',         [CongeController::class, 'create'])->name('conge.create');
+Route::post('/conges',               [CongeController::class, 'store'])->name('conge.store');
+Route::get('/conges/{conge}/edit',   [CongeController::class, 'edit'])->name('conge.edit');
+Route::put('/conges/{conge}',        [CongeController::class, 'update'])->name('conge.update');
+Route::get('/conges/{conge}',        [CongeController::class, 'show'])->name('conge.show');
+Route::delete('/conges/{conge}',     [CongeController::class, 'destroy'])->name('conge.destroy');
+
+
+// ── Rapports PDF ──────────────────────────────────────────────
+Route::get('/rapports',                    [RapportController::class, 'index'])->name('rapport.index');
+Route::get('/rapports/agent/{id}',         [RapportController::class, 'ficheAgent'])->name('rapport.agent');
+Route::get('/rapports/lieu/{lieu}',        [RapportController::class, 'rapportLieu'])->name('rapport.lieu');
+Route::get('/rapports/global',             [RapportController::class, 'rapportGlobal'])->name('rapport.global');

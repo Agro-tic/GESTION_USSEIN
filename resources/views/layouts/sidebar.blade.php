@@ -35,8 +35,8 @@
           <span class="nav-chevron"><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
         </button>
         <ul class="nav-submenu" id="sub-conges" role="list">
-          <li><a href="">Liste</a></li>
-          <li><a href="">Nouveau</a></li>
+          <li><a href="{{ route('conge.index') }}">Liste</a></li>
+          <li><a href="{{ route('conge.create') }}">Nouveau</a></li>
         </ul>
 
         {{-- Absences --}}
@@ -63,9 +63,9 @@
 
 
         {{-- Rapports PDF --}}
-        <a class="nav-link" href="profile.html">
-          <span class="nav-icon"><i class="bi bi-file-earmark-pdf" aria-hidden="true"></i></span>
-          <span class="nav-text">Rapports PDF</span>
+        <a class="nav-link" href="{{ route('rapport.index') }}">
+        <span class="nav-icon"><i class="bi bi-file-earmark-pdf" aria-hidden="true"></i></span>
+        <span class="nav-text">Rapports PDF</span>
         </a>
 
       </nav>
