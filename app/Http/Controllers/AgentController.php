@@ -74,6 +74,22 @@ class AgentController extends Controller
         return view('agents.show', compact('agent'));
     }
 
+   /**
+ * Historique des congés et absences d'un agent
+ */
+public function historique(Agent $agent)
+{
+    $conges   = \App\Models\Conge::where('agent_id', $agent->id)
+                ->orderBy('date_cessation', 'desc')
+                ->get();
+
+    $absences = \App\Models\Absence::where('agent_id', $agent->id)
+                ->orderBy('date_debut', 'desc')
+                ->get();
+
+    return view('agents.historique', compact('agent', 'conges', 'absences'));
+}
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -145,4 +161,6 @@ class AgentController extends Controller
         $joursDus     = $reliquatN1 + $congesAnnee + $bonusEnfants - $absencesDefalquees;
         return min(max($joursDus, 0), 72);
     }
+
+
 }

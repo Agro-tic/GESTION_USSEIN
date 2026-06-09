@@ -35,6 +35,7 @@ Route::get('/absences/{absence}/edit',   [AbsenceController::class, 'edit'])->na
 Route::put('/absences/{absence}',        [AbsenceController::class, 'update'])->name('absence.update');
 Route::get('/absences/{absence}',        [AbsenceController::class, 'show'])->name('absence.show');
 Route::delete('/absences/{absence}',     [AbsenceController::class, 'destroy'])->name('absence.destroy');
+Route::get('/agents/{agent}/historique', [AgentController::class, 'historique'])->name('agent.historique');
 
 // ── Congés ───────────────────────────────────────────────────
 Route::get('/conges',                [CongeController::class, 'index'])->name('conge.index');
@@ -44,6 +45,7 @@ Route::get('/conges/{conge}/edit',   [CongeController::class, 'edit'])->name('co
 Route::put('/conges/{conge}',        [CongeController::class, 'update'])->name('conge.update');
 Route::get('/conges/{conge}',        [CongeController::class, 'show'])->name('conge.show');
 Route::delete('/conges/{conge}',     [CongeController::class, 'destroy'])->name('conge.destroy');
+
 
 
 // ── Rapports PDF ──────────────────────────────────────────────

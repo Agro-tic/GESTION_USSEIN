@@ -12,6 +12,9 @@
         <p class="text-muted mb-0">Consultez et gérez tous les agents enregistrés.</p>
       </div>
     </div>
+    <a href="{{ route('agent.create') }}" class="btn btn-success">
+      <i class="bi bi-person-plus me-1"></i> Nouvel Agent
+    </a>
   </div>
 
   @if(session('success'))
@@ -70,6 +73,9 @@
               <div class="d-flex gap-1">
                 <a class="btn btn-success btn-sm" href="{{ route('agent.show', $item->id) }}" title="Information">
                   <i class="bi bi-eye"></i>
+                </a>
+                <a class="btn btn-warning btn-sm" href="{{ route('agent.historique', $item->id) }}" title="Historique">
+                  <i class="bi bi-clock-history"></i>
                 </a>
                 <a class="btn btn-primary btn-sm" href="{{ route('agent.edit', $item->id) }}" title="Modifier">
                   <i class="bi bi-pencil"></i>
