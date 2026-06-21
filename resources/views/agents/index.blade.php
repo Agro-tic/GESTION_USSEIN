@@ -9,7 +9,7 @@
       <div>
         <p class="eyebrow mb-1">Agents</p>
         <h1 class="h3 mb-1">Liste des Agents</h1>
-        <p class="text-muted mb-0">Consultez et gérez tous les agents enregistrés.</p>
+        <p class="text-muted mb-0">Consultez et gérez tous les agent enregistrés.</p>
       </div>
     </div>
     <a href="{{ route('agent.create') }}" class="btn btn-success">
