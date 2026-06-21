@@ -36,7 +36,7 @@
         </button>
         <ul class="nav-submenu" id="sub-conges" role="list">
           <li><a href="{{ route('conge.index') }}">Liste</a></li>
-          <li><a href="{{ route('conge.create') }}">Nouveau</a></li>
+          <li><a href="{{route('conge.create') }}">Nouveau</a></li>
         </ul>
 
         {{-- Absences --}}
