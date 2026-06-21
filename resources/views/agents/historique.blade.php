@@ -5,92 +5,72 @@
 
   <div class="page-heading mb-4">
     <div class="page-heading-copy">
-      <span class="page-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+      <span class="page-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
       <div>
-        <p class="eyebrow mb-1">Tableau de Bord</p>
-        <h1 class="h3 mb-1">Vue d'ensemble</h1>
-        <p class="text-muted mb-0">Statistiques globales de la gestion des congés et absences.</p>
+        <p class="eyebrow mb-1">Agents</p>
+        <h1 class="h3 mb-1">Historique — {{ $agent->nom }} {{ $agent->prenom }}</h1>
+        <p class="text-muted mb-0">Matricule : {{ $agent->matricule }} — {{ $agent->lieu_affectation }}</p>
       </div>
     </div>
+    <a href="{{ route('agent.show', $agent->id) }}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Retour fiche
+    </a>
   </div>
 
-  {{-- Cartes statistiques --}}
-  <div class="row g-4 mb-4">
-
+  {{-- Résumé des droits --}}
+  <div class="row g-3 mb-4">
     <div class="col-md-3">
-      <div class="panel text-center py-4">
-        <div class="fs-1 fw-bold text-primary">{{ $totalAgents }}</div>
-        <div class="text-muted mt-1">
-          <i class="bi bi-people me-1"></i> Agents
-        </div>
-        <a href="{{ route('agent.index') }}" class="btn btn-sm btn-outline-primary mt-3">
-          Voir la liste
-        </a>
+      <div class="panel text-center py-3">
+        <div class="fs-3 fw-bold text-primary">{{ $agent->jours_conges_dus }}</div>
+        <small class="text-muted">Jours dus</small>
       </div>
     </div>
-
     <div class="col-md-3">
-      <div class="panel text-center py-4">
-        <div class="fs-1 fw-bold text-warning">{{ $congesEnAttente }}</div>
-        <div class="text-muted mt-1">
-          <i class="bi bi-calendar-x me-1"></i> Congés en attente
-        </div>
-        <a href="{{ route('conge.index') }}" class="btn btn-sm btn-outline-warning mt-3">
-          Voir la liste
-        </a>
+      <div class="panel text-center py-3">
+        <div class="fs-3 fw-bold text-danger">{{ $agent->absences_defalquer }}</div>
+        <small class="text-muted">Absences défalquées</small>
       </div>
     </div>
-
     <div class="col-md-3">
-      <div class="panel text-center py-4">
-        <div class="fs-1 fw-bold text-danger">{{ $absencesMois }}</div>
-        <div class="text-muted mt-1">
-          <i class="bi bi-person-dash me-1"></i> Absences ce mois
-        </div>
-        <a href="{{ route('absence.index') }}" class="btn btn-sm btn-outline-danger mt-3">
-          Voir la liste
-        </a>
+      <div class="panel text-center py-3">
+        <div class="fs-3 fw-bold text-warning">{{ $conges->count() }}</div>
+        <small class="text-muted">Congés pris</small>
       </div>
     </div>
-
     <div class="col-md-3">
-      <div class="panel text-center py-4">
-        <div class="fs-1 fw-bold text-success">{{ $joursFeriesAnnee }}</div>
-        <div class="text-muted mt-1">
-          <i class="bi bi-calendar-check me-1"></i> Jours fériés {{ date('Y') }}
+      <div class="panel text-center py-3">
+        <div class="fs-3 fw-bold {{ $agent->jours_restants > 0 ? 'text-success' : 'text-danger' }}">
+          {{ $agent->jours_restants }}
         </div>
-        <a href="{{ route('jourferie.index') }}" class="btn btn-sm btn-outline-success mt-3">
-          Voir la liste
-        </a>
+        <small class="text-muted">Jours restants</small>
       </div>
     </div>
-
   </div>
 
   <div class="row g-4">
 
-    {{-- Derniers congés --}}
+    {{-- Historique Congés --}}
     <div class="col-md-6">
       <section class="panel">
         <h6 class="text-muted text-uppercase fw-bold mb-3">
-          <i class="bi bi-calendar-check me-1"></i> Derniers Congés
+          <i class="bi bi-calendar-check me-1"></i> Historique des Congés
         </h6>
         <div class="table-responsive">
           <table class="table table-striped align-middle">
             <thead class="table-dark">
               <tr>
-                <th>Agent</th>
                 <th>Cessation</th>
                 <th>Reprise</th>
+                <th>Jours</th>
                 <th>Statut</th>
               </tr>
             </thead>
             <tbody>
-              @forelse($derniersConges as $conge)
+              @forelse($conges as $conge)
               <tr>
-                <td>{{ $conge->agent->nom }} {{ $conge->agent->prenom }}</td>
                 <td>{{ \Carbon\Carbon::parse($conge->date_cessation)->format('d/m/Y') }}</td>
                 <td>{{ \Carbon\Carbon::parse($conge->date_reprise)->format('d/m/Y') }}</td>
+                <td>{{ $conge->jours_a_prendre }}</td>
                 <td>
                   @if($conge->statut === 'approuve')
                     <span class="badge bg-success">Approuvé</span>
@@ -111,34 +91,33 @@
             </tbody>
           </table>
         </div>
-        <a href="{{ route('conge.index') }}" class="btn btn-sm btn-outline-primary mt-2">
-          Voir tous les congés
-        </a>
       </section>
     </div>
 
-    {{-- Dernières absences --}}
+    {{-- Historique Absences --}}
     <div class="col-md-6">
       <section class="panel">
         <h6 class="text-muted text-uppercase fw-bold mb-3">
-          <i class="bi bi-person-dash me-1"></i> Dernières Absences
+          <i class="bi bi-person-dash me-1"></i> Historique des Absences
         </h6>
         <div class="table-responsive">
           <table class="table table-striped align-middle">
             <thead class="table-dark">
               <tr>
-                <th>Agent</th>
                 <th>Début</th>
                 <th>Fin</th>
+                <th>Jours</th>
+                <th>Motif</th>
                 <th>Type</th>
               </tr>
             </thead>
             <tbody>
-              @forelse($dernieresAbsences as $absence)
+              @forelse($absences as $absence)
               <tr>
-                <td>{{ $absence->agent->nom }} {{ $absence->agent->prenom }}</td>
                 <td>{{ \Carbon\Carbon::parse($absence->date_debut)->format('d/m/Y') }}</td>
                 <td>{{ \Carbon\Carbon::parse($absence->date_fin)->format('d/m/Y') }}</td>
+                <td>{{ $absence->nb_jours }}</td>
+                <td>{{ $absence->motif }}</td>
                 <td>
                   @if($absence->type_absence === 'ordinaire')
                     <span class="badge bg-warning text-dark">Ordinaire</span>
@@ -149,7 +128,7 @@
               </tr>
               @empty
               <tr>
-                <td colspan="4" class="text-center text-muted py-3">
+                <td colspan="5" class="text-center text-muted py-3">
                   Aucune absence enregistrée.
                 </td>
               </tr>
@@ -157,9 +136,6 @@
             </tbody>
           </table>
         </div>
-        <a href="{{ route('absence.index') }}" class="btn btn-sm btn-outline-danger mt-2">
-          Voir toutes les absences
-        </a>
       </section>
     </div>
 

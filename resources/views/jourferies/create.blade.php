@@ -3,20 +3,19 @@
 @section('contenu')
 <div class="container-fluid px-3 px-lg-4 py-4">
 
+  {{-- En-tête de page --}}
   <div class="page-heading mb-4">
     <div class="page-heading-copy">
-      <span class="page-icon"><i class="bi bi-pencil-square" aria-hidden="true"></i></span>
+      <span class="page-icon"><i class="bi bi-calendar-plus" aria-hidden="true"></i></span>
       <div>
         <p class="eyebrow mb-1">Jours Fériés</p>
-        <h1 class="h3 mb-1">Modifier le Jour Férié</h1>
-
-        <p class="text-muted mb-0">Modifier les informations du jour férié</p>
-        <p class="text-muted mb-0">Modifiez les informations du jour férié</p>
-
+        <h1 class="h3 mb-1">Ajouter un Jour Férié</h1>
+        <p class="text-muted mb-0">Remplissez les informations pour enregistrer un nouveau jour férié</p>
       </div>
     </div>
   </div>
 
+  {{-- Erreurs de validation --}}
   @if($errors->any())
     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
       <strong>Veuillez corriger les erreurs suivantes :</strong>
@@ -30,16 +29,15 @@
   @endif
 
   <section class="panel">
-    <form action="{{ route('jourferie.update', $jourferie->id) }}" method="POST">
+    <form action="{{ route('jourferie.store') }}" method="POST">
       @csrf
-      @method('PUT')
 
       <div class="row g-3">
 
         <div class="col-md-6">
           <label for="nom" class="form-label fw-semibold">Nom du jour férié</label>
           <input class="form-control" type="text" name="nom" id="nom"
-                 value="{{ old('nom', $jourferie->nom) }}" required>
+                 value="{{ old('nom') }}" placeholder="Ex: Fête de l'indépendance" required>
           @error('nom')
             <div class="alert alert-danger mt-1">{{ $message }}</div>
           @enderror
@@ -48,7 +46,7 @@
         <div class="col-md-3">
           <label for="date" class="form-label fw-semibold">Date</label>
           <input class="form-control" type="date" name="date" id="date"
-                 value="{{ old('date', $jourferie->date) }}" required>
+                 value="{{ old('date') }}" required>
           @error('date')
             <div class="alert alert-danger mt-1">{{ $message }}</div>
           @enderror
@@ -57,15 +55,15 @@
         <div class="col-md-3">
           <label for="annee" class="form-label fw-semibold">Année</label>
           <input class="form-control bg-light" type="number" name="annee" id="annee"
-                 value="{{ old('annee', $jourferie->annee) }}" readonly>
+                 value="{{ old('annee', date('Y')) }}" readonly>
           <small class="text-muted">Extraite automatiquement de la date</small>
         </div>
 
-      </div>
+      </div>{{-- fin row --}}
 
       <hr class="my-4">
       <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-success">Modifier</button>
+        <button type="submit" class="btn btn-success">+ Enregistrer</button>
         <a href="{{ route('jourferie.index') }}" class="btn btn-secondary">Annuler</a>
       </div>
 

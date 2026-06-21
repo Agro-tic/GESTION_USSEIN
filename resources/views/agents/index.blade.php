@@ -3,7 +3,6 @@
 @section('contenu')
 <div class="container-fluid px-3 px-lg-4 py-4">
 
-  {{-- En-tête de page --}}
   <div class="page-heading mb-4">
     <div class="page-heading-copy">
       <span class="page-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
@@ -13,9 +12,18 @@
         <p class="text-muted mb-0">Consultez et gérez tous les agents enregistrés.</p>
       </div>
     </div>
+    <a href="{{ route('agent.create') }}" class="btn btn-success">
+      <i class="bi bi-person-plus me-1"></i> Nouvel Agent
+    </a>
   </div>
 
-  {{-- Tableau --}}
+  @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  @endif
+
   <section class="panel">
     <div class="table-responsive">
       <table class="table table-striped table-hover align-middle">
@@ -26,7 +34,7 @@
             <th>Matricule</th>
             <th>Lieu affectation</th>
             <th>Date prise service</th>
-            <th>Genre</th>
+            <th>Sexe</th>
             <th>Nb enfants</th>
             <th>Congés N-1</th>
             <th>Congés N</th>
@@ -46,7 +54,7 @@
             <td>{{ $item->matricule }}</td>
             <td>{{ $item->lieu_affectation }}</td>
             <td>{{ $item->date_prise_service }}</td>
-            <td>{{ $item->genre }}</td>
+            <td>{{ $item->sexe }}</td>
             <td>{{ $item->nb_enfants }}</td>
             <td>{{ $item->jours_conges_annee_precedente }}</td>
             <td>{{ $item->jours_conges_annee_courante }}</td>
@@ -62,23 +70,26 @@
             </td>
             <td>{{ $item->annee_courante }}</td>
             <td>
-            <div class="d-flex gap-1">
+              <div class="d-flex gap-1">
                 <a class="btn btn-success btn-sm" href="{{ route('agent.show', $item->id) }}" title="Information">
-                    <i class="bi bi-eye"></i>
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a class="btn btn-warning btn-sm" href="{{ route('agent.historique', $item->id) }}" title="Historique">
+                  <i class="bi bi-clock-history"></i>
                 </a>
                 <a class="btn btn-primary btn-sm" href="{{ route('agent.edit', $item->id) }}" title="Modifier">
-                    <i class="bi bi-pencil"></i>
+                  <i class="bi bi-pencil"></i>
                 </a>
                 <form action="{{ route('agent.destroy', $item->id) }}" method="POST"
-                    onsubmit="return confirm('Voulez-vous supprimer cet agent ?')">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger btn-sm" type="submit" title="Supprimer">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                  onsubmit="return confirm('Voulez-vous supprimer cet agent ?')">
+                  @csrf
+                  @method('DELETE')
+                  <button class="btn btn-danger btn-sm" type="submit" title="Supprimer">
+                    <i class="bi bi-trash"></i>
+                  </button>
                 </form>
-            </div>
-        </td>
+              </div>
+            </td>
           </tr>
           @empty
           <tr>
@@ -91,6 +102,11 @@
         </tbody>
       </table>
     </div>
+
+    <div class="px-3 pb-3">
+      {{ $agents->links() }}
+    </div>
+
   </section>
 
 </div>

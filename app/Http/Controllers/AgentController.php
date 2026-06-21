@@ -12,8 +12,7 @@ class AgentController extends Controller
      */
     public function index()
     {
-        //$agents = Agent::all();
-        $agents = Agent::paginate(10);
+        $agents = Agent::paginate(5);
         return view('agents.index', compact('agents'));
     }
 
@@ -35,20 +34,35 @@ class AgentController extends Controller
             'prenom'                        => 'required|string|max:255',
             'matricule'                     => 'required|string|max:255|unique:agents,matricule',
             'lieu_affectation'              => 'required|string|max:255',
-            'date_prise_service'            => 'required|date',
-            'genre'                         => 'required|in:M,F',
-            'nb_enfants'                    => 'nullable|integer|min:0',
-            'jours_conges_annee_precedente' => 'nullable|integer|min:0',
-            'jours_conges_annee_courante'   => 'nullable|integer|min:0',
+            'date_prise_service'            => 'required|date|before_or_equal:today',
+            'sexe'                          => 'required|in:M,F',
+            'nb_enfants'                    => 'nullable|integer|min:0|max:20',
+            'jours_conges_annee_precedente' => 'nullable|integer|min:0|max:72',
+            'jours_conges_annee_courante'   => 'nullable|integer|min:0|max:72',
             'absences_defalquer'            => 'nullable|integer|min:0',
             'actif'                         => 'nullable|boolean',
             'annee_courante'                => 'nullable|integer',
         ], [
-            'matricule.unique' => 'Ce matricule existe déjà, veuillez en choisir un autre!',
+            'matricule.unique'                   => 'Ce matricule existe déjà, veuillez en choisir un autre!',
+            'date_prise_service.before_or_equal' => 'La date de prise de service ne peut pas être dans le futur.',
+            'sexe.required'                      => 'Le sexe est obligatoire.',
         ]);
 
+        $validform['jours_conges_dus'] = $this->calculerJoursDus(
+            $validform['jours_conges_annee_precedente'] ?? 0,
+            $validform['jours_conges_annee_courante']   ?? 24,
+            $validform['sexe'],
+            $validform['nb_enfants']                    ?? 0,
+            $validform['absences_defalquer']             ?? 0
+        );
+
+        $validform['jours_restants'] = $validform['jours_conges_dus']
+                                     - ($validform['absences_defalquer'] ?? 0);
+
+        $validform['annee_courante'] = date('Y');
+
         Agent::create($validform);
-        return redirect()->route('agent.index')
+        return redirect()->route('agent.index')  // ← sans s
             ->with('success', 'Agent créé avec succès.');
     }
 
@@ -57,9 +71,24 @@ class AgentController extends Controller
      */
     public function show(Agent $agent)
     {
-        //dd($agent);
         return view('agents.show', compact('agent'));
     }
+
+   /**
+ * Historique des congés et absences d'un agent
+ */
+public function historique(Agent $agent)
+{
+    $conges   = \App\Models\Conge::where('agent_id', $agent->id)
+                ->orderBy('date_cessation', 'desc')
+                ->get();
+
+    $absences = \App\Models\Absence::where('agent_id', $agent->id)
+                ->orderBy('date_debut', 'desc')
+                ->get();
+
+    return view('agents.historique', compact('agent', 'conges', 'absences'));
+}
 
     /**
      * Show the form for editing the specified resource.
@@ -67,7 +96,6 @@ class AgentController extends Controller
     public function edit($id)
     {
         $agent = Agent::find($id);
-        //dd($agent);
         return view('agents.edit', compact('agent'));
     }
 
@@ -79,19 +107,33 @@ class AgentController extends Controller
         $validform = $request->validate([
             'nom'                           => 'required|string|max:255',
             'prenom'                        => 'required|string|max:255',
+            'matricule'                     => 'required|string|max:255|unique:agents,matricule,' . $agent->id,
             'lieu_affectation'              => 'required|string|max:255',
-            'date_prise_service'            => 'required|date',
-            'genre'                         => 'required|in:M,F',
-            'nb_enfants'                    => 'nullable|integer|min:0',
-            'jours_conges_annee_precedente' => 'nullable|integer|min:0',
-            'jours_conges_annee_courante'   => 'nullable|integer|min:0',
+            'date_prise_service'            => 'required|date|before_or_equal:today',
+            'sexe'                          => 'required|in:M,F',
+            'nb_enfants'                    => 'nullable|integer|min:0|max:20',
+            'jours_conges_annee_precedente' => 'nullable|integer|min:0|max:72',
+            'jours_conges_annee_courante'   => 'nullable|integer|min:0|max:72',
             'absences_defalquer'            => 'nullable|integer|min:0',
             'actif'                         => 'nullable|boolean',
             'annee_courante'                => 'nullable|integer',
+        ], [
+            'date_prise_service.before_or_equal' => 'La date de prise de service ne peut pas être dans le futur.',
         ]);
 
+        $validform['jours_conges_dus'] = $this->calculerJoursDus(
+            $validform['jours_conges_annee_precedente'] ?? 0,
+            $validform['jours_conges_annee_courante']   ?? 24,
+            $validform['sexe'],
+            $validform['nb_enfants']                    ?? 0,
+            $validform['absences_defalquer']             ?? 0
+        );
+
+        $validform['jours_restants'] = $validform['jours_conges_dus']
+                                     - ($validform['absences_defalquer'] ?? 0);
+
         $agent->update($validform);
-        return redirect()->route('agent.index')
+        return redirect()->route('agent.index')  // ← sans s
             ->with('success', 'Agent modifié avec succès.');
     }
 
@@ -101,7 +143,24 @@ class AgentController extends Controller
     public function destroy(Agent $agent)
     {
         $agent->delete();
-        return redirect()->route('agent.index')
+        return redirect()->route('agent.index')  // ← sans s
             ->with('success', 'Agent supprimé avec succès.');
     }
+
+    /**
+     * Règle 1 — Calcul des jours de congés dus
+     */
+    private function calculerJoursDus(
+        int $reliquatN1,
+        int $congesAnnee,
+        string $sexe,
+        int $nbEnfants,
+        int $absencesDefalquees
+    ): int {
+        $bonusEnfants = ($sexe === 'F') ? $nbEnfants : 0;
+        $joursDus     = $reliquatN1 + $congesAnnee + $bonusEnfants - $absencesDefalquees;
+        return min(max($joursDus, 0), 72);
+    }
+
+
 }

@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('agents', function (Blueprint $table) {
@@ -18,7 +15,7 @@ return new class extends Migration
             $table->string('matricule')->unique();
             $table->string('lieu_affectation');
             $table->date('date_prise_service');
-            $table->enum('genre', ['M', 'F']);
+            $table->enum('sexe', ['M', 'F']);
             $table->integer('nb_enfants')->default(0);
             $table->integer('jours_conges_annee_precedente')->default(0);
             $table->integer('jours_conges_annee_courante')->default(24);
@@ -28,13 +25,9 @@ return new class extends Migration
             $table->boolean('actif')->default(true);
             $table->integer('annee_courante')->default(date('Y'));
             $table->timestamps();
-
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('agents');
