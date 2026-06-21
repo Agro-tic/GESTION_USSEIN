@@ -80,6 +80,7 @@
                 <a class="btn btn-primary btn-sm" href="{{ route('agent.edit', $item->id) }}" title="Modifier">
                   <i class="bi bi-pencil"></i>
                 </a>
+                @if(auth()->user()->isAdmin())
                 <form action="{{ route('agent.destroy', $item->id) }}" method="POST"
                   onsubmit="return confirm('Voulez-vous supprimer cet agent ?')">
                   @csrf
@@ -88,6 +89,7 @@
                     <i class="bi bi-trash"></i>
                   </button>
                 </form>
+                @endif
               </div>
             </td>
           </tr>
